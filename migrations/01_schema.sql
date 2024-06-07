@@ -1,4 +1,4 @@
-CREATE DATABASE lightbnb;
+-- CREATE DATABASE lightbnb;
 
 --Use drop table you can re-run the file easily.--
 DROP TABLE IF EXISTS users CASCADE;
