@@ -32,7 +32,7 @@ const getUserWithEmail = function(email) {
           return null;
       })
       .catch((err) => {
-          console.error(err.message);
+  throw new Error('Failed to find user');
       });
 };
 
@@ -52,7 +52,7 @@ const getUserWithId = function(id) {
           return null;
       })
       .catch((err) => {
-          console.error(err.message);
+        throw new Error('Failed to find user');;
       });
 };
 
@@ -68,7 +68,7 @@ const addUser = function(user) {
           return res.rows[0];
       })
       .catch((err) => {
-          console.error(err.message);
+        throw new Error('Failed to add user');;
       });
 };
 
@@ -93,7 +93,7 @@ const getAllProperties = (options, limit = 10) => {
       return result.rows;
     })
     .catch((err) => {
-      console.log(err.message);
+      throw new Error('Failed to get properties');
     });
 };
 
