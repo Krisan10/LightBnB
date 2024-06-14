@@ -52,7 +52,7 @@ const getUserWithId = function(id) {
           return null;
       })
       .catch((err) => {
-          console.log(err.message);
+          console.error(err.message);
       });
 };
 
@@ -68,7 +68,7 @@ const addUser = function(user) {
           return res.rows[0];
       })
       .catch((err) => {
-          console.log(err.message);
+          console.error(err.message);
       });
 };
 
