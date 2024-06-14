@@ -84,7 +84,7 @@ const getAllReservations = function(guest_id, limit = 10) {
         .query(`SELECT reservations.*, properties.title, properties.cost_per_night, AVG(rating) AS average_rating
         FROM reservations
         JOIN properties ON property_id = properties.id
-        JOIN property_reviews ON property_reviews.property_id = properties.id
+        JOIN property_reviews ON properties.id = property_reviews.property_id
         WHERE reservations.guest_id = $1 AND reservations.end_date < now()::date
         GROUP BY properties.id, reservations.id
         ORDER BY reservations.start_date
@@ -93,7 +93,7 @@ const getAllReservations = function(guest_id, limit = 10) {
             return res.rows;
         })
         .catch((err) => {
-            throw new ERROR(`Failed to get all reservation ${err.message}`);
+            throw new Error(`Failed to get all reservation ${err.message}`);
         });
 };
 
