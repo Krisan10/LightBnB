@@ -93,7 +93,7 @@ const getAllReservations = function(guest_id, limit = 10) {
             return res.rows;
         })
         .catch((err) => {
-            console.error(err.message);
+            throw new ERROR(`Failed to get all reservation ${err.message}`);
         });
 };
 
