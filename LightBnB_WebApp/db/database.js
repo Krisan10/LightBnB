@@ -1,6 +1,6 @@
 const properties = require("./json/properties.json");
 const users = require("./json/users.json");
-const {Pool} = require('pg')
+const {Pool} = require('pg');
 
 
 const pool = new Pool({
@@ -20,17 +20,17 @@ const pool = new Pool({
  */
 const getUserWithEmail = function(email) {
   return pool
-      .query(`SELECT * FROM users WHERE email = $1`, [email])
-      .then((res) => {
-          const user = res.rows[0];
-          if (user) {
-              return user;
-          }
-          return null;
-      })
-      .catch((err) => {
-  throw new Error('Failed to find user', err);
-      });
+    .query(`SELECT * FROM users WHERE email = $1`, [email])
+    .then((res) => {
+      const user = res.rows[0];
+      if (user) {
+        return user;
+      }
+      return null;
+    })
+    .catch((err) => {
+      throw new Error('Failed to find user', err);
+    });
 };
 
 
@@ -41,17 +41,17 @@ const getUserWithEmail = function(email) {
  */
 const getUserWithId = function(id) {
   return pool
-      .query(`SELECT * FROM users WHERE id = $1`, [id])
-      .then((res) => {
-          const user = res.rows[0];
-          if (user) {
-              return user;
-          }
-          return null;
-      })
-      .catch((err) => {
-        throw new Error('Failed to find user', err);;
-      });
+    .query(`SELECT * FROM users WHERE id = $1`, [id])
+    .then((res) => {
+      const user = res.rows[0];
+      if (user) {
+        return user;
+      }
+      return null;
+    })
+    .catch((err) => {
+      throw new Error('Failed to find user', err);
+    });
 };
 
 
@@ -62,13 +62,13 @@ const getUserWithId = function(id) {
  */
 const addUser = function(user) {
   return pool
-      .query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *`, [user.name, user.email, user.password])
-      .then((res) => {
-          return res.rows[0];
-      })
-      .catch((err) => {
-        throw new Error('Failed to add user', err);;
-      });
+    .query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *`, [user.name, user.email, user.password])
+    .then((res) => {
+      return res.rows[0];
+    })
+    .catch((err) => {
+      throw new Error('Failed to add user', err);
+    });
 };
 
 
@@ -82,7 +82,7 @@ const addUser = function(user) {
  */
 const getAllReservations = function(guest_id, limit = 10) {
   return pool
-      .query(`SELECT reservations.*, properties.title, properties.cost_per_night, AVG(rating) AS average_rating
+    .query(`SELECT reservations.*, properties.title, properties.cost_per_night, AVG(rating) AS average_rating
       FROM reservations
       JOIN properties ON property_id = properties.id
       JOIN property_reviews ON properties.id = property_reviews.property_id
@@ -90,12 +90,12 @@ const getAllReservations = function(guest_id, limit = 10) {
       GROUP BY properties.id, reservations.id
       ORDER BY reservations.start_date
       LIMIT $2`, [guest_id, limit])
-      .then((res) => {
-          return res.rows;
-      })
-      .catch((err) => {
-          throw new Error(`Failed to get all reservation`, err);
-      });
+    .then((res) => {
+      return res.rows;
+    })
+    .catch((err) => {
+      throw new Error(`Failed to get all reservation`, err);
+    });
 };
 
 
@@ -171,18 +171,49 @@ const getAllProperties = function(options, limit = 10) {
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  return pool
-      .query(`INSERT INTO properties
-      (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code, country, parking_spaces, number_of_bathrooms, number_of_bedrooms)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-      RETURNING *`,
-      [owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code, country, parking_spaces, number_of_bathrooms, number_of_bedrooms])
-      .then((res) => {
-          return res.rows[0];
-      })
-      .catch((err) => {
-          throw new Error('could not add property', err);
-      });
+  const queryParams = [
+    property.owner_id, property.title,
+    property.description,
+    property.thumbnail_photo_url,
+    property.cover_photo_url,
+    property.cost_per_night,
+    property.street,
+    property.city,
+    property.province,
+    property.post_code,
+    property.country,
+    property.parking_spaces,
+    property.number_of_bathrooms,
+    property.number_of_bedrooms
+  ];
+
+  const queryString = `
+    INSERT INTO properties (
+      owner_id,
+      title,
+      description,
+      thumbnail_photo_url,
+      cover_photo_url,
+      cost_per_night,
+      street,
+      city,
+      province,
+      post_code,
+      country,
+      parking_spaces,
+      number_of_bathrooms,
+      number_of_bedrooms
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    RETURNING *;
+  `;
+
+  return pool.query(queryString, queryParams)
+    .then(res => res.rows[0])
+    .catch((err) => {
+      console.error(err.message);
+      throw err;
+    });
 };
 
 
